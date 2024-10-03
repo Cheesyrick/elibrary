@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+/* i like man */
 class CategoryPage extends StatelessWidget {
   final String category;
 
-  CategoryPage({required this.category});
+  const CategoryPage({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
