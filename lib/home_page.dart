@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'category_page.dart'; // Import the new file
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Perpustakaan Online'),
+        title: const Text('Perpustakaan Online'),
       ),
       body: ListView(
         children: [
@@ -28,7 +30,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildCategory(BuildContext context, String category) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(category),
         trailing: const Icon(Icons.arrow_forward_ios),
