@@ -68,10 +68,32 @@ class _SearchPageState extends State<SearchPage> {
             child: ListView.builder(
               itemCount: filteredBooks.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(filteredBooks[index].title),
-                  subtitle: Text(filteredBooks[index].author),
-                  trailing: Text(filteredBooks[index].subject),
+                return Card(
+                  elevation: 4,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          filteredBooks[index].title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Penulis: ${filteredBooks[index].author}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Kategori: ${filteredBooks[index].subject}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
