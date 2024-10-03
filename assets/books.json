@@ -2,76 +2,91 @@
   {
     "title": "1984",
     "author": "George Orwell",
-    "subject": "Fiction"
+    "subject": "Fiction",
+    "synopsis": "A dystopian novel set in a totalitarian society, where the government maintains power through surveillance, manipulation, and control of language and history."
   },
   {
     "title": "To Kill a Mockingbird",
     "author": "Harper Lee",
-    "subject": "Fiction"
+    "subject": "Fiction",
+    "synopsis": "A powerful story of racial injustice and loss of innocence in the American South, told through the eyes of a young girl named Scout Finch."
   },
   {
     "title": "A Brief History of Time",
     "author": "Stephen Hawking",
-    "subject": "Science"
+    "subject": "Science",
+    "synopsis": "An exploration of various fundamental questions about our universe, including its origin and evolution, in a way that non-specialist readers can understand."
   },
   {
     "title": "Skripsi Speed",
     "author": "iShowSpeed",
-    "subject": "Science"
+    "subject": "Science",
+    "synopsis": "A comprehensive guide on how to efficiently complete a thesis or dissertation, offering tips and strategies for rapid academic writing."
   },
   {
     "title": "Pride and Prejudice",
     "author": "Jane Austen",
-    "subject": "Fiction"
+    "subject": "Fiction",
+    "synopsis": "A classic romance novel that follows the emotional development of Elizabeth Bennet as she deals with issues of manners, upbringing, and marriage in 19th-century England."
   },
   {
     "title": "The Catcher in the Rye",
     "author": "J.D. Salinger",
-    "subject": "Fiction"
+    "subject": "Fiction",
+    "synopsis": "A story of teenage alienation and angst, following Holden Caulfield's experiences in New York City in the days following his expulsion from prep school."
   },
   {
     "title": "The Hobbit",
     "author": "J.R.R. Tolkien",
-    "subject": "Fantasy"
+    "subject": "Fantasy",
+    "synopsis": "A fantasy novel about the adventures of hobbit Bilbo Baggins, who is hired by the wizard Gandalf to accompany 13 dwarves on a quest to reclaim their treasure from a dragon."
   },
   {
     "title": "Sapiens: A Brief History of Humankind",
     "author": "Yuval Noah Harari",
-    "subject": "History"
+    "subject": "History",
+    "synopsis": "An exploration of the history of humankind from the Stone Age to the twenty-first century, examining how biology and history have defined us and enhanced our understanding of what it means to be 'human'."
   },
   {
     "title": "The Alchemist",
     "author": "Paulo Coelho",
-    "subject": "Fiction"
+    "subject": "Fiction",
+    "synopsis": "A philosophical novel about a young Andalusian shepherd who yearns to travel in search of worldly treasure, but ends up discovering the true meaning of life and love."
   },
   {
     "title": "The Da Vinci Code",
     "author": "Dan Brown",
-    "subject": "Thriller"
+    "subject": "Thriller",
+    "synopsis": "A mystery thriller that follows symbologist Robert Langdon and cryptologist Sophie Neveu as they investigate a murder in Paris's Louvre Museum and discover a battle between the Priory of Sion and Opus Dei over the possibility of Jesus having been married to Mary Magdalene."
   },
   {
     "title": "The Hunger Games",
     "author": "Suzanne Collins",
-    "subject": "Young Adult"
+    "subject": "Young Adult",
+    "synopsis": "Set in a dystopian future, this novel follows 16-year-old Katniss Everdeen as she becomes a reluctant hero and symbol of rebellion against the tyrannical Capitol."
   },
   {
     "title": "The Great Gatsby",
     "author": "F. Scott Fitzgerald",
-    "subject": "Fiction"
+    "subject": "Fiction",
+    "synopsis": "A tragic love story set in the Roaring Twenties, exploring themes of decadence, idealism, social upheaval, and resistance to change."
   },
   {
     "title": "Cosmos",
     "author": "Carl Sagan",
-    "subject": "Science"
+    "subject": "Science",
+    "synopsis": "A journey through space and time, exploring the history of astronomy, the origins of life, and the possibilities of extraterrestrial life and space exploration."
   },
   {
     "title": "The Diary of a Young Girl",
     "author": "Anne Frank",
-    "subject": "Biography"
+    "subject": "Biography",
+    "synopsis": "The journal of a young Jewish girl hiding from the Nazis during World War II, providing a poignant and deeply personal account of life under occupation."
   },
   {
     "title": "The Lord of the Rings",
     "author": "J.R.R. Tolkien",
-    "subject": "Fantasy"
+    "subject": "Fantasy",
+    "synopsis": "An epic high-fantasy novel that follows hobbits Frodo, Sam, and their companions on a quest to destroy the One Ring and defeat the Dark Lord Sauron."
   }
 ]
