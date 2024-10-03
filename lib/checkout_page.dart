@@ -4,7 +4,7 @@ import 'book.dart';
 class CheckoutPage extends StatelessWidget {
   final List<Book> cartItems;
 
-  const CheckoutPage({Key? key, required this.cartItems}) : super(key: key);
+  const CheckoutPage({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +12,10 @@ class CheckoutPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout'),
+        title: const Text('Checkout'),
       ),
       body: cartItems.isEmpty
-          ? Center(
+          ? const Center(
               child: Text(
                 'Tidak ada item di keranjang',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -28,7 +28,7 @@ class CheckoutPage extends StatelessWidget {
                     itemCount: cartItems.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        leading: Icon(Icons.book),
+                        leading: const Icon(Icons.book),
                         title: Text(cartItems[index].title),
                         subtitle: Text(cartItems[index].author),
                         trailing: Text(
@@ -42,11 +42,11 @@ class CheckoutPage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total:',
+                      const Text('Total:',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                       Text('Rp ${total.toStringAsFixed(0)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ],
                   ),
@@ -54,18 +54,18 @@ class CheckoutPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    child: Text('Selesaikan Pembelian'),
                     onPressed: () {
                       // Implementasi proses checkout di sini
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Pembelian berhasil!')),
+                        const SnackBar(content: Text('Pembelian berhasil!')),
                       );
                       Navigator.of(context).pop(
                           true); // Mengembalikan true ketika pembayaran selesai
                     },
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 50),
+                      minimumSize: const Size(double.infinity, 50),
                     ),
+                    child: Text('Selesaikan Pembelian'),
                   ),
                 ),
               ],

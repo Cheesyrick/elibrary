@@ -3,6 +3,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -46,7 +48,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cari Buku')),
+      appBar: AppBar(title: const Text('Cari Buku')),
       body: Column(
         children: [
           Padding(
@@ -55,7 +57,7 @@ class _SearchPageState extends State<SearchPage> {
               onChanged: _filterBooks,
               decoration: InputDecoration(
                 labelText: 'Cari judul, pengarang, atau kategori',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

@@ -6,6 +6,8 @@ import 'book.dart';
 import 'checkout_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -56,7 +58,7 @@ class _HomePageState extends State<HomePage> {
   void _goToCheckout() {
     if (cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Keranjang kosong')),
+        const SnackBar(content: Text('Keranjang kosong')),
       );
     } else {
       Navigator.push(
@@ -78,13 +80,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rekomendasi Buku Hari Ini'),
+        title: const Text('Rekomendasi Buku Hari Ini'),
         actions: [
           Stack(
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: Icon(Icons.shopping_cart),
+                icon: const Icon(Icons.shopping_cart),
                 onPressed: _goToCheckout,
               ),
               if (cartItems.isNotEmpty)
@@ -92,18 +94,18 @@ class _HomePageState extends State<HomePage> {
                   right: 8,
                   top: 8,
                   child: Container(
-                    padding: EdgeInsets.all(2),
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                       minWidth: 16,
                       minHeight: 16,
                     ),
                     child: Text(
                       '${cartItems.length}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                       ),
@@ -118,8 +120,8 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Rekomendasi Hari Ini',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -128,7 +130,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 200,
             child: recommendedBooks.isEmpty
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: recommendedBooks.length,
@@ -149,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                                   height: 100,
                                   decoration: BoxDecoration(
                                     color: Colors.grey[300],
-                                    borderRadius: BorderRadius.vertical(
+                                    borderRadius: const BorderRadius.vertical(
                                         top: Radius.circular(10)),
                                   ),
                                   child: Center(
@@ -165,12 +167,12 @@ class _HomePageState extends State<HomePage> {
                                     children: [
                                       Text(
                                         recommendedBooks[index].title,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      SizedBox(height: 4),
+                                      const SizedBox(height: 4),
                                       Text(
                                         recommendedBooks[index].author,
                                         style: TextStyle(
@@ -190,8 +192,8 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Semua Buku',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -202,7 +204,8 @@ class _HomePageState extends State<HomePage> {
               itemCount: allBooks.length,
               itemBuilder: (context, index) {
                 return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
                     leading: Container(
                       width: 50,
@@ -216,21 +219,21 @@ class _HomePageState extends State<HomePage> {
                     ),
                     title: Text(
                       allBooks[index].title,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(allBooks[index].author),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           'Rp ${allBooks[index].price?.toStringAsFixed(0) ?? 'N/A'}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.add_shopping_cart),
+                      icon: const Icon(Icons.add_shopping_cart),
                       onPressed: () => _addToCart(allBooks[index]),
                       tooltip: 'Tambahkan ke keranjang',
                     ),

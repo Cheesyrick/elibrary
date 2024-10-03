@@ -5,7 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 class CategoryPage extends StatefulWidget {
   final String category;
 
-  const CategoryPage({Key? key, required this.category}) : super(key: key);
+  const CategoryPage({super.key, required this.category});
 
   @override
   _CategoryPageState createState() => _CategoryPageState();
