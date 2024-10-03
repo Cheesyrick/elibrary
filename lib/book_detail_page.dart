@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'book.dart';
+import 'book.dart'; // Make sure this import is correct
 
 class BookDetailPage extends StatelessWidget {
   final Book book;

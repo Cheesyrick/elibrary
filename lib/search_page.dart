@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
+import 'book_detail_page.dart';
+import 'book.dart'; // Add this import
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -68,30 +70,41 @@ class _SearchPageState extends State<SearchPage> {
             child: ListView.builder(
               itemCount: filteredBooks.length,
               itemBuilder: (context, index) {
-                return Card(
-                  elevation: 4,
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          filteredBooks[index].title,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Penulis: ${filteredBooks[index].author}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Kategori: ${filteredBooks[index].subject}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BookDetailPage(book: filteredBooks[index]),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 4,
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            filteredBooks[index].title,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Penulis: ${filteredBooks[index].author}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Kategori: ${filteredBooks[index].subject}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -100,22 +113,6 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class Book {
-  final String title;
-  final String author;
-  final String subject;
-
-  Book({required this.title, required this.author, required this.subject});
-
-  factory Book.fromJson(Map<String, dynamic> json) {
-    return Book(
-      title: json['title'],
-      author: json['author'],
-      subject: json['subject'],
     );
   }
 }
