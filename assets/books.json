@@ -1,0 +1,77 @@
+[
+  {
+    "title": "1984",
+    "author": "George Orwell",
+    "subject": "Fiction"
+  },
+  {
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "subject": "Fiction"
+  },
+  {
+    "title": "A Brief History of Time",
+    "author": "Stephen Hawking",
+    "subject": "Science"
+  },
+  {
+    "title": "Skripsi Speed",
+    "author": "iShowSpeed",
+    "subject": "Science"
+  },
+  {
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "subject": "Fiction"
+  },
+  {
+    "title": "The Catcher in the Rye",
+    "author": "J.D. Salinger",
+    "subject": "Fiction"
+  },
+  {
+    "title": "The Hobbit",
+    "author": "J.R.R. Tolkien",
+    "subject": "Fantasy"
+  },
+  {
+    "title": "Sapiens: A Brief History of Humankind",
+    "author": "Yuval Noah Harari",
+    "subject": "History"
+  },
+  {
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "subject": "Fiction"
+  },
+  {
+    "title": "The Da Vinci Code",
+    "author": "Dan Brown",
+    "subject": "Thriller"
+  },
+  {
+    "title": "The Hunger Games",
+    "author": "Suzanne Collins",
+    "subject": "Young Adult"
+  },
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "subject": "Fiction"
+  },
+  {
+    "title": "Cosmos",
+    "author": "Carl Sagan",
+    "subject": "Science"
+  },
+  {
+    "title": "The Diary of a Young Girl",
+    "author": "Anne Frank",
+    "subject": "Biography"
+  },
+  {
+    "title": "The Lord of the Rings",
+    "author": "J.R.R. Tolkien",
+    "subject": "Fantasy"
+  }
+]
