@@ -31,9 +31,16 @@ class BookDetailPage extends StatelessWidget {
               'Kategori: ${book.subject}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
+            if (book.price != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Harga: Rp ${book.price!.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
             const SizedBox(height: 16),
             Text(
-              'Deskripsi:',
+              'Sinopsis:',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
