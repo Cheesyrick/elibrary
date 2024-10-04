@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'book.dart';
 import 'checkout_page.dart';
 import 'book_detail_page.dart';
@@ -138,7 +139,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SizedBox(
-            height: 200,
+            height: 265,
             child: recommendedBooks.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
@@ -160,16 +161,26 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[300],
-                                      borderRadius: const BorderRadius.vertical(
-                                          top: Radius.circular(10)),
-                                    ),
-                                    child: Center(
-                                      child: Icon(Icons.book,
-                                          size: 50, color: Colors.grey[600]),
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(10)),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          recommendedBooks[index].cover_image,
+                                      height: 100,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Container(
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                            child: CircularProgressIndicator()),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                        color: Colors.grey[300],
+                                        child: Icon(Icons.book,
+                                            size: 50, color: Colors.grey[600]),
+                                      ),
                                     ),
                                   ),
                                   Padding(
@@ -193,6 +204,27 @@ class _HomePageState extends State<HomePage> {
                                               color: Colors.grey[600]),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Rp ${recommendedBooks[index].price?.toStringAsFixed(0) ?? 'N/A'}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        ElevatedButton(
+                                          onPressed: () => _addToCart(
+                                              recommendedBooks[index]),
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            minimumSize:
+                                                const Size(double.infinity, 40),
+                                          ),
+                                          child: const Text('Add to Cart',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black)),
                                         ),
                                       ],
                                     ),
@@ -221,15 +253,24 @@ class _HomePageState extends State<HomePage> {
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: allBooks[index].cover_image,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey[200],
+                          child:
+                              const Center(child: CircularProgressIndicator()),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey[200],
+                          child: Icon(Icons.book,
+                              color: Colors.grey[600], size: 30),
+                        ),
                       ),
-                      child:
-                          Icon(Icons.book, color: Colors.grey[600], size: 30),
                     ),
                     title: Text(
                       allBooks[index].title,

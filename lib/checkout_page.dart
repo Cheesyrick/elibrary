@@ -6,6 +6,31 @@ class CheckoutPage extends StatelessWidget {
 
   const CheckoutPage({super.key, required this.cartItems});
 
+  Future<void> _processCheckout(BuildContext context) async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
+    // Simulate API call or processing time
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Close loading indicator
+    Navigator.of(context).pop();
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Pembelian berhasil!')),
+    );
+
+    // Clear cart and return to previous screen
+    Navigator.of(context).pop(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     double total = cartItems.fold(0, (sum, item) => sum + (item.price ?? 0));
@@ -54,18 +79,11 @@ class CheckoutPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Implementasi proses checkout di sini
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Pembelian berhasil!')),
-                      );
-                      Navigator.of(context).pop(
-                          true); // Mengembalikan true ketika pembayaran selesai
-                    },
+                    onPressed: () => _processCheckout(context),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: Text('Selesaikan Pembelian'),
+                    child: const Text('Selesaikan Pembelian'),
                   ),
                 ),
               ],

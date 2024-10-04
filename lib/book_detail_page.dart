@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'book.dart'; // Make sure this import is correct
 
 class BookDetailPage extends StatelessWidget {
@@ -17,6 +18,26 @@ class BookDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkImage(
+                  imageUrl: book.cover_image,
+                  height: 200,
+                  width: 133,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[300],
+                    child: const Center(child: Text('No Image')),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             Text(
               book.title,
               style: Theme.of(context).textTheme.headlineMedium,
