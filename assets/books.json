@@ -1,5 +1,6 @@
 [
   {
+    "id": "1",
     "title": "1984",
     "author": "George Orwell",
     "subject": "Fiction",
@@ -7,6 +8,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "2",
     "title": "To Kill a Mockingbird",
     "author": "Harper Lee",
     "subject": "Fiction",
@@ -14,6 +16,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "3",
     "title": "A Brief History of Time",
     "author": "Stephen Hawking",
     "subject": "Science",
@@ -21,6 +24,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "4",
     "title": "Skripsi Speed",
     "author": "iShowSpeed",
     "subject": "Science",
@@ -28,6 +32,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "5",
     "title": "Pride and Prejudice",
     "author": "Jane Austen",
     "subject": "Fiction",
@@ -35,6 +40,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "6",
     "title": "The Catcher in the Rye",
     "author": "J.D. Salinger",
     "subject": "Fiction",
@@ -42,6 +48,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "7",
     "title": "The Hobbit",
     "author": "J.R.R. Tolkien",
     "subject": "Fantasy",
@@ -49,6 +56,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "8",
     "title": "Sapiens: A Brief History of Humankind",
     "author": "Yuval Noah Harari",
     "subject": "History",
@@ -56,6 +64,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "9",
     "title": "The Alchemist",
     "author": "Paulo Coelho",
     "subject": "Fiction",
@@ -63,6 +72,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "10",
     "title": "The Da Vinci Code",
     "author": "Dan Brown",
     "subject": "Thriller",
@@ -70,6 +80,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "11",
     "title": "The Hunger Games",
     "author": "Suzanne Collins",
     "subject": "Young Adult",
@@ -77,6 +88,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "12",
     "title": "The Great Gatsby",
     "author": "F. Scott Fitzgerald",
     "subject": "Fiction",
@@ -84,6 +96,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "13",
     "title": "Cosmos",
     "author": "Carl Sagan",
     "subject": "Science",
@@ -91,6 +104,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "14",
     "title": "The Diary of a Young Girl",
     "author": "Anne Frank",
     "subject": "Biography",
@@ -98,6 +112,7 @@
     "cover_image": "https://fakeimg.pl/667x1000/cc6600"
   },
   {
+    "id": "15",
     "title": "The Lord of the Rings",
     "author": "J.R.R. Tolkien",
     "subject": "Fantasy",
