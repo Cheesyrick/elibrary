@@ -7,11 +7,15 @@ import 'book_detail_page.dart';
 class DownloadedBooksPage extends StatefulWidget {
   final List<Book> downloadedBooks;
   final Function(Book) onDeleteBook;
+  final bool isOnline;
+  final Function(bool) onToggleOnline;
 
   const DownloadedBooksPage({
     Key? key,
     required this.downloadedBooks,
     required this.onDeleteBook,
+    required this.isOnline,
+    required this.onToggleOnline,
   }) : super(key: key);
 
   @override
@@ -19,11 +23,13 @@ class DownloadedBooksPage extends StatefulWidget {
 }
 
 class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
+  late bool _isOnline;
   late List<Book> _downloadedBooks;
 
   @override
   void initState() {
     super.initState();
+    _isOnline = widget.isOnline;
     _downloadedBooks = List.from(widget.downloadedBooks);
   }
 
@@ -58,51 +64,69 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buku yang Diunduh'),
+        actions: [
+          Switch(
+            value: _isOnline,
+            onChanged: (value) {
+              setState(() {
+                _isOnline = value;
+              });
+              widget.onToggleOnline(value);
+              if (value) {
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ],
       ),
-      body: _downloadedBooks.isEmpty
-          ? const Center(child: Text('Tidak ada buku yang diunduh'))
-          : ListView.builder(
-              itemCount: _downloadedBooks.length,
-              itemBuilder: (context, index) {
-                final book = _downloadedBooks[index];
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: book.cover_image,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey[200],
-                          child:
-                              const Center(child: CircularProgressIndicator()),
+      body: _isOnline
+          ? const Center(
+              child: Text(
+                  'Anda sedang dalam mode online. Nonaktifkan switch untuk melihat buku yang diunduh.'))
+          : _downloadedBooks.isEmpty
+              ? const Center(child: Text('Tidak ada buku yang diunduh'))
+              : ListView.builder(
+                  itemCount: _downloadedBooks.length,
+                  itemBuilder: (context, index) {
+                    final book = _downloadedBooks[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: CachedNetworkImage(
+                            imageUrl: book.cover_image,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                  child: CircularProgressIndicator()),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey[200],
+                              child: Icon(Icons.book,
+                                  color: Colors.grey[600], size: 30),
+                            ),
+                          ),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey[200],
-                          child: Icon(Icons.book,
-                              color: Colors.grey[600], size: 30),
+                        title: Text(
+                          book.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
+                        subtitle: Text(book.author),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteDownloadedBook(book),
+                          tooltip: 'Hapus unduhan',
+                        ),
+                        onTap: () => _navigateToBookDetail(book),
                       ),
-                    ),
-                    title: Text(
-                      book.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(book.author),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteDownloadedBook(book),
-                      tooltip: 'Hapus unduhan',
-                    ),
-                    onTap: () => _navigateToBookDetail(book),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
     );
   }
 }
