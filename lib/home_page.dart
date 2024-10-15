@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rekomendasi Buku Hari Ini'),
+        title: const Text('E-Library'),
         actions: [
           Stack(
             alignment: Alignment.center,
