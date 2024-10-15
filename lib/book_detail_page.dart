@@ -32,7 +32,7 @@ class BookDetailPage extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: Colors.grey[300],
-                    child: const Center(child: Text('No Image')),
+                    child: const Center(child: Text('Tidak Ada Gambar')),
                   ),
                 ),
               ),

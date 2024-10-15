@@ -6,6 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'book.dart';
 import 'checkout_page.dart';
 import 'book_detail_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'downloaded_books_page.dart'; // Tambahkan import ini
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +20,8 @@ class _HomePageState extends State<HomePage> {
   List<Book> allBooks = [];
   List<Book> recommendedBooks = [];
   List<Book> cartItems = [];
+  List<Book> downloadedBooks = [];
+  bool isOnlineMode = true;
 
   @override
   void initState() {
@@ -37,6 +41,18 @@ class _HomePageState extends State<HomePage> {
       }).toList();
       _getDailyRecommendations();
     });
+    await _loadDownloadedBooks();
+  }
+
+  Future<void> _loadDownloadedBooks() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> downloadedBookIds =
+        prefs.getStringList('downloadedBooks') ?? [];
+    setState(() {
+      downloadedBooks = allBooks
+          .where((book) => downloadedBookIds.contains(book.id))
+          .toList();
+    });
   }
 
   void _getDailyRecommendations() {
@@ -44,8 +60,59 @@ class _HomePageState extends State<HomePage> {
     final int seed = now.year * 10000 + now.month * 100 + now.day;
     final random = Random(seed);
 
+    if (allBooks.isEmpty) {
+      recommendedBooks = [];
+      return;
+    }
     final shuffledBooks = List<Book>.from(allBooks)..shuffle(random);
-    recommendedBooks = shuffledBooks.take(3).toList();
+    recommendedBooks = shuffledBooks.take(min(3, allBooks.length)).toList();
+  }
+
+  void _toggleOnlineMode(bool value) {
+    setState(() {
+      isOnlineMode = value;
+    });
+    if (!value) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DownloadedBooksPage(
+            downloadedBooks: downloadedBooks,
+            onDeleteBook: (Book book) {
+              setState(() {
+                downloadedBooks.remove(book);
+              });
+            },
+            isOnline: isOnlineMode,
+            onToggleOnline: (bool newValue) {
+              setState(() {
+                isOnlineMode = newValue;
+              });
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _downloadBook(Book book) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> downloadedBookIds =
+        prefs.getStringList('downloadedBooks') ?? [];
+    if (!downloadedBookIds.contains(book.id)) {
+      downloadedBookIds.add(book.id);
+      await prefs.setStringList('downloadedBooks', downloadedBookIds);
+      setState(() {
+        downloadedBooks.add(book);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${book.title} berhasil diunduh')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${book.title} sudah diunduh sebelumnya')),
+      );
+    }
   }
 
   void _addToCart(Book book) {
@@ -91,8 +158,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('E-Library'),
+        title: const Text('Rekomendasi Buku Hari Ini'),
         actions: [
+          Switch(
+            value: isOnlineMode,
+            onChanged: _toggleOnlineMode,
+          ),
           Stack(
             alignment: Alignment.center,
             children: [
@@ -128,179 +199,205 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Rekomendasi Hari Ini',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      body: isOnlineMode
+          ? _buildOnlineContent()
+          : Center(
+              child: ElevatedButton(
+                child: Text('Lihat Buku yang Diunduh'),
+                onPressed: () => _toggleOnlineMode(false),
+              ),
             ),
+    );
+  }
+
+  Widget _buildOnlineContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Rekomendasi Hari Ini 🤪',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
-            height: 265,
-            child: recommendedBooks.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: recommendedBooks.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () =>
-                            _navigateToBookDetail(recommendedBooks[index]),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 160,
-                            child: Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+        ),
+        SizedBox(
+          height: 350,
+          child: recommendedBooks.isEmpty
+              ? const Center(child: Text('Tidak ada rekomendasi'))
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: recommendedBooks.length,
+                  itemBuilder: (context, index) {
+                    final book = recommendedBooks[index];
+                    final bool isDownloaded = downloadedBooks.contains(book);
+                    return GestureDetector(
+                      onTap: () => _navigateToBookDetail(book),
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: SizedBox(
+                          width: 180,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: CachedNetworkImage(
+                                  imageUrl: book.cover_image,
+                                  width: 120,
+                                  height: 180,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Container(
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                        child: CircularProgressIndicator()),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                    color: Colors.grey[200],
+                                    child: Icon(Icons.book,
+                                        color: Colors.grey[600], size: 30),
+                                  ),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      book.title,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      book.author,
+                                      style: const TextStyle(fontSize: 12),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Rp ${book.price?.toStringAsFixed(0) ?? 'N/A'}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(10)),
-                                    child: CachedNetworkImage(
-                                      imageUrl:
-                                          recommendedBooks[index].cover_image,
-                                      height: 100,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => Container(
-                                        color: Colors.grey[300],
-                                        child: const Center(
-                                            child: CircularProgressIndicator()),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                        color: Colors.grey[300],
-                                        child: Icon(Icons.book,
-                                            size: 50, color: Colors.grey[600]),
-                                      ),
-                                    ),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_shopping_cart,
+                                        size: 20),
+                                    onPressed: () => _addToCart(book),
+                                    tooltip: 'Tambahkan ke keranjang',
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          recommendedBooks[index].title,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          recommendedBooks[index].author,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[600]),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Rp ${recommendedBooks[index].price?.toStringAsFixed(0) ?? 'N/A'}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        ElevatedButton(
-                                          onPressed: () => _addToCart(
-                                              recommendedBooks[index]),
-                                          style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8),
-                                            minimumSize:
-                                                const Size(double.infinity, 40),
-                                          ),
-                                          child: const Text('Add to Cart',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.black)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  if (!isDownloaded)
+                                    IconButton(
+                                      icon:
+                                          const Icon(Icons.download, size: 20),
+                                      onPressed: () => _downloadBook(book),
+                                      tooltip: 'Unduh buku',
+                                    )
+                                  else
+                                    Icon(Icons.check,
+                                        color: Colors.green, size: 20),
                                 ],
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Semua Buku 🤗',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Semua Buku',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: allBooks.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: allBooks[index].cover_image,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey[200],
-                          child:
-                              const Center(child: CircularProgressIndicator()),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey[200],
-                          child: Icon(Icons.book,
-                              color: Colors.grey[600], size: 30),
-                        ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: allBooks.length,
+            itemBuilder: (context, index) {
+              final book = allBooks[index];
+              final bool isDownloaded = downloadedBooks.contains(book);
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: book.cover_image,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[200],
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[200],
+                        child:
+                            Icon(Icons.book, color: Colors.grey[600], size: 30),
                       ),
                     ),
-                    title: Text(
-                      allBooks[index].title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(allBooks[index].author),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Rp ${allBooks[index].price?.toStringAsFixed(0) ?? 'N/A'}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.add_shopping_cart),
-                      onPressed: () => _addToCart(allBooks[index]),
-                      tooltip: 'Tambahkan ke keranjang',
-                    ),
-                    isThreeLine: true,
-                    onTap: () => _navigateToBookDetail(allBooks[index]),
                   ),
-                );
-              },
-            ),
+                  title: Text(
+                    book.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(book.author),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Rp ${book.price?.toStringAsFixed(0) ?? 'N/A'}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.add_shopping_cart),
+                        onPressed: () => _addToCart(book),
+                        tooltip: 'Tambahkan ke keranjang',
+                      ),
+                      if (!isDownloaded)
+                        IconButton(
+                          icon: const Icon(Icons.download),
+                          onPressed: () => _downloadBook(book),
+                          tooltip: 'Unduh buku',
+                        )
+                      else
+                        Icon(Icons.check, color: Colors.green),
+                    ],
+                  ),
+                  isThreeLine: true,
+                  onTap: () => _navigateToBookDetail(book),
+                ),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

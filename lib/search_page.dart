@@ -50,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cari Buku')),
+      appBar: AppBar(title: const Text('Cari Buku 🕵️')),
       body: Column(
         children: [
           Padding(
