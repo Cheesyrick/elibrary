@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rekomendasi Buku Hari Ini'),
+        title: const Text('E-library'),
         actions: [
           Switch(
             value: isOnlineMode,
