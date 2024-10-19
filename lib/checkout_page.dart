@@ -7,7 +7,6 @@ class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key, required this.cartItems});
 
   Future<void> _processCheckout(BuildContext context) async {
-    // Show loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -16,18 +15,14 @@ class CheckoutPage extends StatelessWidget {
       },
     );
 
-    // Simulate API call or processing time
     await Future.delayed(const Duration(seconds: 2));
 
-    // Close loading indicator
     Navigator.of(context).pop();
 
-    // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Pembelian berhasil!')),
     );
 
-    // Clear cart and return to previous screen
     Navigator.of(context).pop(true);
   }
 

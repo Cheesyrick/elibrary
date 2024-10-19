@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'book.dart'; // Make sure this import is correct
+import 'book.dart';
 
 class BookDetailPage extends StatelessWidget {
   final Book book;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'book_detail_page.dart';
-import 'book.dart'; // Add this import
+import 'book.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
