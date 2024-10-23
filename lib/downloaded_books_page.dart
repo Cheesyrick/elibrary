@@ -29,7 +29,7 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
   @override
   void initState() {
     super.initState();
-    _isOnline = false; // Selalu mulai dalam mode offline
+    _isOnline = false;
     _downloadedBooks = List.from(widget.downloadedBooks);
   }
 
@@ -70,7 +70,7 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
     return WillPopScope(
       onWillPop: () async {
         _goBackToHomePage();
-        return false; // Mencegah default back behavior
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(
