@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'search_page.dart';
+import 'login.dart';
+import 'profile.dart';
+import 'package:provider/provider.dart';
+import 'providers/cart_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,13 +13,16 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Book App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider(
+      create: (ctx) => CartProvider(),
+      child: MaterialApp(
+        title: 'Book App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: LoginScreen(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: MainScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -30,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     SearchPage(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -53,6 +61,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
