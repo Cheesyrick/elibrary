@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
       _getDailyRecommendations();
     });
     await _loadDownloadedBooks();
+    await _loadCartItems();
   }
 
   Future<void> _loadDownloadedBooks() async {
@@ -152,6 +153,21 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => BookDetailPage(book: book),
       ),
     );
+  }
+
+  Future<void> _saveCartItems() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> cartItemIds = cartItems.map((book) => book.id).toList();
+    await prefs.setStringList('cartItems', cartItemIds);
+  }
+
+  Future<void> _loadCartItems() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> cartItemIds = prefs.getStringList('cartItems') ?? [];
+    setState(() {
+      cartItems =
+          allBooks.where((book) => cartItemIds.contains(book.id)).toList();
+    });
   }
 
   @override
