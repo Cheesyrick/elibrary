@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'book.dart';
 import 'book_detail_page.dart';
+import 'helpers/database_helper.dart';
 
 class DownloadedBooksPage extends StatefulWidget {
   final List<Book> downloadedBooks;
@@ -34,18 +34,19 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
   }
 
   Future<void> _deleteDownloadedBook(Book book) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> downloadedBookIds =
-        prefs.getStringList('downloadedBooks') ?? [];
-    if (downloadedBookIds.contains(book.id)) {
-      downloadedBookIds.remove(book.id);
-      await prefs.setStringList('downloadedBooks', downloadedBookIds);
+    try {
+      await DatabaseHelper.instance.removeFromDownloaded(book.id);
       setState(() {
         _downloadedBooks.remove(book);
       });
       widget.onDeleteBook(book);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${book.title} berhasil dihapus dari unduhan')),
+      );
+    } catch (e) {
+      print('Error deleting downloaded book: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal menghapus buku')),
       );
     }
   }
@@ -74,69 +75,185 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Buku yang Diunduh'),
+          title: const Text(
+            'Buku yang Diunduh',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back_ios), // Updated icon
             onPressed: _goBackToHomePage,
           ),
           actions: [
-            Switch(
-              value: _isOnline,
-              onChanged: (value) {
-                if (value) {
-                  _goBackToHomePage();
-                } else {
-                  setState(() {
-                    _isOnline = false;
-                  });
-                }
-              },
+            Row(
+              children: [
+                Text(
+                  _isOnline ? 'Online' : 'Offline',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _isOnline ? Colors.green : Colors.grey,
+                  ),
+                ),
+                Switch(
+                  value: _isOnline,
+                  activeColor: Colors.green,
+                  onChanged: (value) {
+                    if (value) {
+                      _goBackToHomePage();
+                    } else {
+                      setState(() {
+                        _isOnline = false;
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
           ],
         ),
         body: _downloadedBooks.isEmpty
-            ? const Center(child: Text('Tidak ada buku yang diunduh'))
-            : ListView.builder(
-                itemCount: _downloadedBooks.length,
-                itemBuilder: (context, index) {
-                  final book = _downloadedBooks[index];
-                  return Card(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl: book.cover_image,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey[200],
-                            child: const Center(
-                                child: CircularProgressIndicator()),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            color: Colors.grey[200],
-                            child: Icon(Icons.book,
-                                color: Colors.grey[600], size: 30),
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.library_books,
+                      size: 80,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Tidak ada buku yang diunduh',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Unduh buku untuk membacanya secara offline',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(12),
+                child: ListView.builder(
+                  itemCount: _downloadedBooks.length,
+                  itemBuilder: (context, index) {
+                    final book = _downloadedBooks[index];
+                    return Dismissible(
+                      key: Key(book.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        color: Colors.red,
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onDismissed: (direction) => _deleteDownloadedBook(book),
+                      child: Card(
+                        elevation: 2,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => _navigateToBookDetail(book),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: CachedNetworkImage(
+                                    imageUrl: book.cover_image,
+                                    width: 70,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      color: Colors.grey[200],
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                      color: Colors.grey[200],
+                                      child: Icon(
+                                        Icons.book,
+                                        color: Colors.grey[600],
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        book.title,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        book.author,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.download_done,
+                                            size: 16,
+                                            color: Colors.green[600],
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'Tersedia offline',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.green[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline),
+                                  color: Colors.red[400],
+                                  onPressed: () => _deleteDownloadedBook(book),
+                                  tooltip: 'Hapus unduhan',
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      title: Text(
-                        book.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(book.author),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteDownloadedBook(book),
-                        tooltip: 'Hapus unduhan',
-                      ),
-                      onTap: () => _navigateToBookDetail(book),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
       ),
     );

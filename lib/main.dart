@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'search_page.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'login.dart';
 import 'profile.dart';
 import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/price_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // For development only - remove in production
+  // await DatabaseHelper.instance.deleteDatabase();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (ctx) => CartProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => CartProvider()),
+        ChangeNotifierProvider(create: (ctx) => PriceProvider()),
+      ],
       child: MaterialApp(
         title: 'Book App',
         theme: ThemeData(
@@ -47,6 +51,12 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<CartProvider>(context, listen: false).loadCart();
   }
 
   @override

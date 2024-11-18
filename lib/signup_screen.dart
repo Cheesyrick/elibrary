@@ -1,98 +1,70 @@
-import 'package:elibrary/signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart';
+import 'login.dart';
 import 'helpers/database_helper.dart';
+import 'models/user.dart';
 
-class LoginScreen extends StatefulWidget {
+class SignupScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
-  void initState() {
-    super.initState();
-    _checkLoginStatus();
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
-  Future<void> _checkLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? email = prefs.getString('user_email');
-    final String? password = prefs.getString('user_password');
-    final bool? isLoggedIn = prefs.getBool('is_logged_in');
-
-    if (email != null && password != null && isLoggedIn == true) {
-      try {
-        final user = await DatabaseHelper.instance.getUser(email);
-
-        if (user != null && user.password == password) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-          );
-          return;
-        }
-      } catch (e) {
-        print('Error checking login status: $e');
-      }
-
-      // If we get here, stored credentials are invalid
-      await _clearUserCredentials();
-    }
-  }
-
-  Future<void> _clearUserCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user_email');
-    await prefs.remove('user_password');
-    await prefs.setBool('is_logged_in', false);
-  }
-
-  Future<void> _saveUserCredentials(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_email', email);
-    await prefs.setString('user_password', password);
-    await prefs.setBool('is_logged_in', true);
-  }
-
-  void _handleLogin() async {
+  void _handleSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
       try {
-        final user =
+        // Check if user already exists
+        final existingUser =
             await DatabaseHelper.instance.getUser(_emailController.text);
-
-        if (user != null && user.password == _passwordController.text) {
-          // Save credentials
-          await _saveUserCredentials(
-              _emailController.text, _passwordController.text);
-
+        if (existingUser != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Login berhasil!')),
+            SnackBar(content: Text('Email sudah terdaftar!')),
           );
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Email atau password salah!')),
-          );
+          return;
         }
+
+        // Create new user
+        final user = User(
+          email: _emailController.text,
+          password: _passwordController.text,
+          username: _usernameController.text,
+        );
+
+        await DatabaseHelper.instance.insertUser(user);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Pendaftaran berhasil!')),
+        );
+
+        // Navigate back to login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login gagal: ${e.toString()}')),
+          SnackBar(content: Text('Pendaftaran gagal: ${e.toString()}')),
         );
       } finally {
         setState(() {
@@ -114,10 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 40),
+              SizedBox(height: 30),
               // Welcome Text in white
               Text(
-                'Selamat Datang',
+                'Buat Akun Baru',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -126,13 +98,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 10),
               Text(
-                'Silahkan login untuk melanjutkan',
+                'Silahkan daftar untuk melanjutkan',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white.withOpacity(0.8),
                 ),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 30),
               // White Container for Form
               Container(
                 decoration: BoxDecoration(
@@ -150,7 +122,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextFormField(
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            labelText: 'Username',
+                            prefixIcon: Icon(Icons.person, color: Colors.blue),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Username tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
                           controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             labelText: 'Email',
                             prefixIcon: Icon(Icons.email, color: Colors.blue),
@@ -165,13 +162,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Mohon masukkan email';
+                              return 'Email tidak boleh kosong';
                             }
                             if (!value.contains('@')) {
-                              return 'Mohon masukkan email yang valid';
+                              return 'Email tidak valid';
                             }
                             return null;
                           },
@@ -179,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
+                          obscureText: _obscurePassword,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock, color: Colors.blue),
@@ -206,10 +203,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          obscureText: _obscurePassword,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Mohon masukkan password';
+                              return 'Password tidak boleh kosong';
                             }
                             if (value.length < 6) {
                               return 'Password minimal 6 karakter';
@@ -217,9 +213,51 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 80),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          decoration: InputDecoration(
+                            labelText: 'Konfirmasi Password',
+                            prefixIcon: Icon(Icons.lock, color: Colors.blue),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.blue,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
+                                });
+                              },
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Konfirmasi password tidak boleh kosong';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Password tidak cocok';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
+                          onPressed: _isLoading ? null : _handleSignup,
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: _isLoading
@@ -232,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   )
                                 : Text(
-                                    'Login',
+                                    'Daftar',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -253,19 +291,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Belum punya akun?',
+                              'Sudah punya akun?',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                             TextButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SignupScreen()),
-                                );
+                                Navigator.pop(context);
                               },
                               child: Text(
-                                'Daftar',
+                                'Login',
                                 style: TextStyle(
                                   color: Colors.blue,
                                   fontWeight: FontWeight.bold,
@@ -284,12 +318,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 }

@@ -3,7 +3,7 @@ class Book {
   final String author;
   final String subject;
   final String synopsis;
-  final double? price;
+  double? price;
   final String cover_image;
   final String id;
 
