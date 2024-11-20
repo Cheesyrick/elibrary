@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 40),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
               // Welcome Text in white
               Text(
                 'Selamat Datang',
@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.white.withOpacity(0.8),
                 ),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
               // White Container for Form
               Container(
                 decoration: BoxDecoration(
@@ -217,11 +217,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 80),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.05),
                         ElevatedButton(
                           onPressed: _isLoading ? null : _handleLogin,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
+                            padding: EdgeInsets.symmetric(
+                                vertical:
+                                    MediaQuery.of(context).size.height * 0.02),
                             child: _isLoading
                                 ? SizedBox(
                                     height: 20,
@@ -234,7 +237,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Text(
                                     'Login',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.025,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),

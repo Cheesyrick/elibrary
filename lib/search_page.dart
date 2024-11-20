@@ -242,6 +242,16 @@ class _SearchPageState extends State<SearchPage> {
                                                 color: Colors.grey[600],
                                               ),
                                             ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              book.subject,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         Text(

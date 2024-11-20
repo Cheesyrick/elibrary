@@ -61,9 +61,8 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
   }
 
   void _goBackToHomePage() {
-    widget.onToggleOnline(true); // Set mode online sebelum kembali
-    Navigator.of(context).popUntil(
-        (route) => route.isFirst); // Kembali ke halaman pertama (HomePage)
+    widget.onToggleOnline(true); // Set mode online before returning
+    Navigator.of(context).pop(); // Go back to the previous screen
   }
 
   @override
