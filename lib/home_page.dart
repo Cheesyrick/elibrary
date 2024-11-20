@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'book.dart';
 import 'checkout_page.dart';
 import 'book_detail_page.dart';
-import 'downloaded_books_page.dart';
 import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
 import 'helpers/database_helper.dart';
@@ -23,7 +22,6 @@ class _HomePageState extends State<HomePage> {
   List<Book> allBooks = [];
   List<Book> recommendedBooks = [];
   List<Book> downloadedBooks = [];
-  bool isOnlineMode = true;
 
   @override
   void initState() {
@@ -93,45 +91,25 @@ class _HomePageState extends State<HomePage> {
     recommendedBooks = shuffledBooks.take(min(3, allBooks.length)).toList();
   }
 
-  void _toggleOnlineMode(bool value) {
-    setState(() {
-      isOnlineMode = value;
-    });
-    if (!value) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DownloadedBooksPage(
-            downloadedBooks: downloadedBooks,
-            onDeleteBook: (Book book) {
-              setState(() {
-                downloadedBooks.remove(book);
-              });
-            },
-            isOnline: isOnlineMode,
-            onToggleOnline: (bool newValue) {
-              setState(() {
-                isOnlineMode = newValue;
-              });
-            },
-          ),
-        ),
-      );
-    }
-  }
-
   Future<void> _downloadBook(Book book) async {
-    if (!downloadedBooks.contains(book)) {
-      await DatabaseHelper.instance.addToDownloaded(book.id);
-      setState(() {
-        downloadedBooks.add(book);
-      });
+    try {
+      if (!downloadedBooks.contains(book)) {
+        await DatabaseHelper.instance.addToDownloaded(book.id);
+        setState(() {
+          downloadedBooks.add(book);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${book.title} berhasil diunduh')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${book.title} sudah diunduh sebelumnya')),
+        );
+      }
+    } catch (e) {
+      print('Error downloading book: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${book.title} berhasil diunduh')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${book.title} sudah diunduh sebelumnya')),
+        SnackBar(content: Text('Gagal mengunduh buku')),
       );
     }
   }
@@ -187,11 +165,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
-          Switch(
-            value: isOnlineMode,
-            onChanged: _toggleOnlineMode,
-            activeColor: Colors.white,
-          ),
           Stack(
             alignment: Alignment.center,
             children: [
@@ -229,20 +202,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(width: 8),
         ],
       ),
-      body: isOnlineMode
-          ? _buildOnlineContent()
-          : Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                child: Text('Lihat Buku yang Diunduh'),
-                onPressed: () => _toggleOnlineMode(false),
-              ),
-            ),
+      body: _buildOnlineContent(),
     );
   }
 

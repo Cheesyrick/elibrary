@@ -7,15 +7,11 @@ import 'helpers/database_helper.dart';
 class DownloadedBooksPage extends StatefulWidget {
   final List<Book> downloadedBooks;
   final Function(Book) onDeleteBook;
-  final bool isOnline;
-  final Function(bool) onToggleOnline;
 
   const DownloadedBooksPage({
     Key? key,
     required this.downloadedBooks,
     required this.onDeleteBook,
-    required this.isOnline,
-    required this.onToggleOnline,
   }) : super(key: key);
 
   @override
@@ -23,13 +19,11 @@ class DownloadedBooksPage extends StatefulWidget {
 }
 
 class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
-  late bool _isOnline;
   late List<Book> _downloadedBooks;
 
   @override
   void initState() {
     super.initState();
-    _isOnline = false;
     _downloadedBooks = List.from(widget.downloadedBooks);
   }
 
@@ -61,7 +55,6 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
   }
 
   void _goBackToHomePage() {
-    widget.onToggleOnline(true); // Set mode online before returning
     Navigator.of(context).pop(); // Go back to the previous screen
   }
 
@@ -82,32 +75,6 @@ class _DownloadedBooksPageState extends State<DownloadedBooksPage> {
             icon: Icon(Icons.arrow_back_ios), // Updated icon
             onPressed: _goBackToHomePage,
           ),
-          actions: [
-            Row(
-              children: [
-                Text(
-                  _isOnline ? 'Online' : 'Offline',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: _isOnline ? Colors.green : Colors.grey,
-                  ),
-                ),
-                Switch(
-                  value: _isOnline,
-                  activeColor: Colors.green,
-                  onChanged: (value) {
-                    if (value) {
-                      _goBackToHomePage();
-                    } else {
-                      setState(() {
-                        _isOnline = false;
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
         ),
         body: _downloadedBooks.isEmpty
             ? Center(

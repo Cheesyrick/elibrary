@@ -155,12 +155,12 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 )
               : SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 8),
                   sliver: SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.58,
-                      crossAxisSpacing: 16,
+                      childAspectRatio: 0.53,
+                      crossAxisSpacing: 8,
                       mainAxisSpacing: 16,
                     ),
                     delegate: SliverChildBuilderDelegate(

@@ -5,6 +5,7 @@ import './checkout_page.dart';
 import 'login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/database_helper.dart';
+import './downloaded_books_page.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -177,6 +178,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     onTap: _goToCheckout,
+                  ),
+                ),
+                Card(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: ListTile(
+                    leading: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(Icons.download_done, color: Colors.green),
+                    ),
+                    title: Text('Buku Terunduh'),
+                    onTap: () async {
+                      final downloadedBooks =
+                          await DatabaseHelper.instance.getDownloadedBooks();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DownloadedBooksPage(
+                            downloadedBooks: downloadedBooks,
+                            onDeleteBook: (book) {
+                              // Optional: Add any callback needed when a book is deleted
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 Card(
