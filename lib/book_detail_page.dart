@@ -16,6 +16,22 @@ class BookDetailPage extends StatelessWidget {
             expandedHeight: 300,
             floating: false,
             pinned: true,
+            backgroundColor: Colors.black.withOpacity(0.3),
+            leading: Container(
+              margin: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.blue,
+                  size: 20,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: 'book-${book.id}',

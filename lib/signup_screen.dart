@@ -115,7 +115,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(50.0),
                   child: Form(
                     key: _formKey,
                     child: Column(

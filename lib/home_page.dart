@@ -1,3 +1,4 @@
+import 'package:elibrary/services/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
@@ -10,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
 import 'helpers/database_helper.dart';
 import 'providers/price_provider.dart';
+import 'widgets/connectivity_banner.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,6 +29,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _initializeData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isOnline = context.watch<ConnectivityService>().isOnline;
+    if (!isOnline) {
+      _loadDownloadedBooks();
+    }
   }
 
   Future<void> _initializeData() async {
@@ -72,10 +83,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadDownloadedBooks() async {
-    final books = await DatabaseHelper.instance.getDownloadedBooks();
-    setState(() {
-      downloadedBooks = books;
-    });
+    if (!mounted) return;
+
+    try {
+      final books = await DatabaseHelper.instance.getDownloadedBooks();
+      if (mounted) {
+        setState(() {
+          downloadedBooks = books;
+        });
+      }
+    } catch (e) {
+      print('Error loading downloaded books: $e');
+    }
   }
 
   void _getDailyRecommendations() {
@@ -153,6 +172,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final cartItems = Provider.of<CartProvider>(context).items;
+    final isOnline = context.watch<ConnectivityService>().isOnline;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -165,44 +186,50 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart, size: 28),
-                onPressed: _goToCheckout,
-              ),
-              if (cartItems.isNotEmpty)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    child: Text(
-                      '${cartItems.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+          if (isOnline)
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.shopping_cart, size: 28),
+                  onPressed: _goToCheckout,
+                ),
+                if (cartItems.isNotEmpty)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      textAlign: TextAlign.center,
+                      constraints: BoxConstraints(
+                        minWidth: 20,
+                        minHeight: 20,
+                      ),
+                      child: Text(
+                        '${cartItems.length}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-          SizedBox(width: 8),
+              ],
+            ),
         ],
       ),
-      body: _buildOnlineContent(),
+      body: Column(
+        children: [
+          const ConnectivityBanner(),
+          Expanded(
+            child: isOnline ? _buildOnlineContent() : _buildOfflineContent(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -491,6 +518,93 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildOfflineContent() {
+    return ListView.builder(
+      padding: EdgeInsets.all(16),
+      itemCount: downloadedBooks.length,
+      itemBuilder: (context, index) {
+        final book = downloadedBooks[index];
+        return Card(
+          elevation: 2,
+          margin: EdgeInsets.only(bottom: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(15),
+            onTap: () => _navigateToBookDetail(book),
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      imageUrl: book.cover_image,
+                      width: 80,
+                      height: 120,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[200],
+                        child: Icon(Icons.book, color: Colors.grey[400]),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[200],
+                        child: Icon(Icons.book, color: Colors.grey[400]),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          book.title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          book.author,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.download_done,
+                              size: 16,
+                              color: Colors.green[600],
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              'Tersedia offline',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.green[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
