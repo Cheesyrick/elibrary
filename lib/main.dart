@@ -10,8 +10,6 @@ import 'services/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // For development only - remove in production
-  // await DatabaseHelper.instance.deleteDatabase();
   runApp(
     MultiProvider(
       providers: [

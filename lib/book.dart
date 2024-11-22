@@ -6,6 +6,7 @@ class Book {
   double? price;
   final String cover_image;
   final String id;
+  final String content;
 
   Book({
     required this.title,
@@ -15,6 +16,7 @@ class Book {
     this.price,
     required this.cover_image,
     required this.id,
+    this.content = '',
   });
 
   factory Book.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,20 @@ class Book {
       price: json['price']?.toDouble(),
       cover_image: json['cover_image'],
       id: json['id'],
+      content: json['content'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'author': author,
+      'subject': subject,
+      'synopsis': synopsis,
+      'price': price,
+      'cover_image': cover_image,
+      'id': id,
+      'content': content,
+    };
   }
 }

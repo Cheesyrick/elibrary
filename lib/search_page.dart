@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:convert';
 import 'book_detail_page.dart';
 import 'book.dart';
 import 'helpers/database_helper.dart';
+import 'package:elibrary/services/connectivity_service.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,6 +15,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   List<Book> allBooks = [];
+  List<Book> downloadedBooks = [];
   List<Book> filteredBooks = [];
   String searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
@@ -32,21 +33,33 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> _loadBooks() async {
-    final String response = await rootBundle.loadString('assets/books.json');
-    final List<dynamic> data = await json.decode(response);
-    final dbHelper = DatabaseHelper.instance;
+    final isOnline = context.read<ConnectivityService>().isOnline;
 
-    setState(() {
-      allBooks = data.map((book) => Book.fromJson(book)).toList();
-      filteredBooks = allBooks;
-    });
+    if (isOnline) {
+      final dbHelper = DatabaseHelper.instance;
+      final dbBooks = await dbHelper.getAllBooks();
+      setState(() {
+        allBooks = dbBooks;
+        filteredBooks = dbBooks;
+      });
+    } else {
+      // Load only downloaded books in offline mode
+      final downloadedBooks =
+          await DatabaseHelper.instance.getDownloadedBooks();
+      setState(() {
+        allBooks = downloadedBooks;
+        filteredBooks = downloadedBooks;
+      });
+    }
+  }
 
-    // Get books with prices from database
-    final dbBooks = await dbHelper.getAllBooks();
-    setState(() {
-      allBooks = dbBooks;
-      filteredBooks = dbBooks;
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isOnline = context.watch<ConnectivityService>().isOnline;
+    if (!isOnline) {
+      _loadBooks();
+    }
   }
 
   void _filterBooks(String query) {

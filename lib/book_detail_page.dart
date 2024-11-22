@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'book.dart';
+import 'book_reader_page.dart';
 
 class BookDetailPage extends StatelessWidget {
   final Book book;
@@ -98,6 +99,27 @@ class BookDetailPage extends StatelessWidget {
                             height: 1.5,
                             color: Colors.black87,
                           ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookReaderPage(book: book),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.book),
+                    label: Text('Baca Buku'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
