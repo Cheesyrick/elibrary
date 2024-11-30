@@ -87,7 +87,7 @@ class DatabaseHelper {
   }
 
   // Books operations
-  Future<void> insertBook(Book book) async {
+  Future<void> readBook(Book book) async {
     final db = await database;
     await db.insert(
       'books',

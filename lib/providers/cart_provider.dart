@@ -14,7 +14,7 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<void> addItem(Book book) async {
-    await dbHelper.insertBook(book); // Ensure book exists in DB
+    await dbHelper.readBook(book); // Ensure book exists in DB
     await dbHelper.addToCart(book.id);
     _items.add(book);
     notifyListeners();

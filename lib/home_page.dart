@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
 
       // Store books in database
       for (var book in jsonBooks) {
-        await DatabaseHelper.instance.insertBook(book);
+        await DatabaseHelper.instance.readBook(book);
       }
 
       if (!mounted) return;
